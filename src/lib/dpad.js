@@ -35,6 +35,7 @@ export function useDpad() {
   useEffect(() => {
     const onKey = (e) => {
       if (!e.key.startsWith('Arrow')) return;
+      if (location.hash === '#drive' && !e.target.closest?.('.tabs,.nav-bottom')) return; // arrows drive the car
       const all = [...document.querySelectorAll('[data-focusable]')];
       if (!all.length) return;
       const cur = document.activeElement?.hasAttribute?.('data-focusable') ? document.activeElement : null;

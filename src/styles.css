@@ -55,3 +55,14 @@ pre{max-width:100%;white-space:pre-wrap;overflow-wrap:anywhere}
 .tbl{overflow-x:auto;max-width:100%}
 textarea{max-width:100%}
 @media (max-width:900px){.step{grid-template-columns:auto 1fr}.step .btn{grid-column:2;justify-self:start}}
+.drive-wrap{position:relative;border-radius:12px;overflow:hidden;touch-action:none;user-select:none}
+.drive-cv{width:100%;height:clamp(320px,62vh,640px);display:block;background:#12351f}
+.hud{position:absolute;left:12px;top:12px;display:grid;gap:8px;pointer-events:none}
+.speedo{background:rgba(10,15,36,.78);border:1px solid var(--line);border-radius:14px;padding:8px 14px;display:flex;align-items:baseline;gap:6px}.speedo b{font-size:2rem;font-variant-numeric:tabular-nums}.speedo span{color:var(--mute);font-size:.75rem}
+.laps{background:rgba(10,15,36,.78);border:1px solid var(--line);border-radius:12px;padding:6px 12px;display:grid}.laps span{color:var(--mute);font-size:.72rem}
+.warn{background:var(--bad);color:#fff;border-radius:10px;padding:4px 10px;font-weight:700;font-size:.8rem;width:max-content}
+.pad{display:none;position:absolute;left:0;right:0;bottom:10px;padding:0 12px;justify-content:space-between;pointer-events:none}
+.pad-l,.pad-r{display:flex;gap:10px;pointer-events:auto}
+.padbtn{width:74px;height:74px;border-radius:50%;border:2px solid var(--line);background:rgba(18,25,53,.8);font-weight:800;font-size:1.1rem;touch-action:none}
+.padbtn.gas{background:rgba(61,220,151,.28);border-color:var(--accent2)}.padbtn.brake{background:rgba(255,93,115,.25);border-color:var(--bad)}
+@media (hover:none),(max-width:900px){.pad{display:flex}.drive-cv{height:clamp(300px,52vh,520px)}}

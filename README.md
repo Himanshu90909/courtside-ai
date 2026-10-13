@@ -4,19 +4,20 @@
 
 **Live demo:** https://himanshu90909.github.io/courtside-ai/
 
-This project merges three earlier repos into one responsive, working web app:
+This project merges three earlier repos (plus a new car simulator) into one responsive, working web app:
 
 | Module | What it does | Origin |
 |---|---|---|
 | **Live Arena** | Multi-game live rail, D-pad (Fire TV remote) navigation, 3-persona AI commentator, text-to-speech, Ask-the-game, Alexa+ intent simulator | [courtside-tv](https://github.com/Himanshu90909/courtside-tv) |
 | **Insight Lab** | Planner / Analyst / Writer / Verifier agents produce an experiment decision memo; deterministic auditor traces every number to a tool call; SRM guard refuses broken experiments | [experiment-analyst-agent](https://github.com/Himanshu90909/experiment-analyst-agent) |
+| **Car Sim** | Top-down driving simulator: grip/off-track physics, 3 cars, checkpointed lap timing, AI rival, personal bests (localStorage), keyboard / touch pedals / gamepad | new |
 | **Entity Match** | Normalize, block (composite keys), fuzzy-score and cluster business records, live in the browser | [Amazon-ML-Challenge](https://github.com/Himanshu90909/Amazon-ML-Challenge) |
 
 ## Run
 ```bash
 npm install
 npm run dev      # http://localhost:5173
-npm test         # 6 unit tests
+npm test         # 12 unit tests
 npm run build    # static site in dist/
 ```
 Deployed to GitHub Pages from the `gh-pages` branch (built `dist/`). An optional Actions workflow is in `docs/deploy-workflow.yml.example`.
