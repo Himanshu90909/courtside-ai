@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "description": "CourtSide Arena: Fire TV + Alexa+ sports companion with an AI commentator, an agentic A/B Insight Lab, and a business entity-matching engine.",
-  "scripts": { "dev": "vite", "build": "vite build", "preview": "vite preview", "test": "node --test tests/core.test.js tests/car.test.js" },
+  "scripts": { "dev": "vite", "build": "vite build", "preview": "vite preview", "test": "node --test tests/core.test.js" },
   "dependencies": { "react": "^18.3.1", "react-dom": "^18.3.1" },
   "devDependencies": { "@vitejs/plugin-react": "^4.3.1", "vite": "^5.4.0" }
 }

@@ -3,14 +3,12 @@ import { useDpad } from './lib/dpad.js';
 import Arena from './views/Arena.jsx';
 import Lab from './views/Lab.jsx';
 import Match from './views/Match.jsx';
-import Drive from './views/Drive.jsx';
 import About from './views/About.jsx';
 
 const TABS = [
   { id: 'arena', label: 'Live Arena', C: Arena },
   { id: 'lab', label: 'Insight Lab', C: Lab },
   { id: 'match', label: 'Entity Match', C: Match },
-  { id: 'drive', label: 'Car Sim', C: Drive },
   { id: 'about', label: 'How it works', C: About },
 ];
 
