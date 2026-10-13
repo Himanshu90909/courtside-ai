@@ -14,7 +14,7 @@ export function buildTrack() {
     const r = 1 + 0.06 * Math.sin(3 * a) + 0.04 * Math.cos(2 * a);
     pts.push({ x: Math.cos(a) * 1100 * r, y: Math.sin(a) * 700 * r });
   }
-  return { pts, half: 62, length: pts.reduce((s, p, i) => s + Math.hypot(pts[(i + 1) % N].x - p.x, pts[(i + 1) % N].y - p.y), 0) };
+  return { pts, half: 95, length: pts.reduce((s, p, i) => s + Math.hypot(pts[(i + 1) % N].x - p.x, pts[(i + 1) % N].y - p.y), 0) };
 }
 
 export function nearest(track, x, y) {
@@ -43,7 +43,7 @@ export function step(s, input, dt, track) {
 
   const nr = nearest(track, s.x, s.y);
   s.offTrack = nr.dist > track.half;
-  const surface = s.offTrack ? 0.45 : 1; // grass is slow and slippery
+  const surface = s.offTrack ? 0.6 : 1; // grass is slow and slippery
 
   let a = input.throttle * c.accel * surface - input.brake * c.brake * Math.sign(fwd || 1) - fwd * 0.35 * (s.offTrack ? 3 : 1) - Math.sign(fwd) * fwd * fwd * 0.0006;
   if (input.brake && Math.abs(fwd) < 6 && !input.throttle) a = -fwd / dt * 0.5;
@@ -51,15 +51,25 @@ export function step(s, input, dt, track) {
   // lateral grip: kill sideways velocity, handbrake-like loss at speed
   const newLat = lat * Math.exp(-c.grip * surface * dt);
 
-  const steerAuth = clamp(Math.abs(newFwd) / 90, 0, 1) * (1 - 0.35 * clamp(Math.abs(newFwd) / c.top, 0, 1));
-  s.heading += input.steer * c.turn * steerAuth * Math.sign(newFwd || 1) * dt;
+  // Bicycle-style steering: yaw rate = speed / turnRadius, with the steering angle shrinking as speed rises.
+  const sp = Math.abs(newFwd);
+  const maxAngle = c.turn * 0.17 / (1 + sp / 120);            // rad of wheel lock; less at speed
+  const yaw = (newFwd / 46) * Math.tan(clamp(input.steer, -1, 1) * maxAngle * 3.4);
+  const gripLimit = c.grip * surface * 38 / Math.max(sp, 1);   // max yaw rate before tyres give up (understeer)
+  s.heading += clamp(yaw, -gripLimit, gripLimit) * dt;
+  s.yaw = yaw;
 
+  // Heading changed: re-express velocity in the new body frame. Part of the sideways component survives (slide),
+  // decaying with tyre grip, so fast corners drift a little instead of snapping.
   const nfx = Math.cos(s.heading), nfy = Math.sin(s.heading);
-  s.vx = nfx * newFwd + -nfy * newLat;
-  s.vy = nfy * newFwd + nfx * newLat;
+  const wFwd = newFwd * 1, wLat = newLat;
+  const vx0 = fx * wFwd + -fy * wLat, vy0 = fy * wFwd + fx * wLat;       // world velocity before turning
+  const nFwd = vx0 * nfx + vy0 * nfy, nLat = (vx0 * -nfy + vy0 * nfx) * Math.exp(-c.grip * surface * dt);
+  s.vx = nfx * nFwd + -nfy * nLat;
+  s.vy = nfy * nFwd + nfx * nLat;
   s.x += s.vx * dt; s.y += s.vy * dt;
   s.speed = Math.hypot(s.vx, s.vy);
-  s.slip = Math.abs(newLat);
+  s.slip = Math.abs(nLat);
   s.time += dt; s.lapTime += dt;
 
   // lap logic: must pass through every quarter checkpoint in order

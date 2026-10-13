@@ -15,6 +15,7 @@ export default function Drive() {
   const [pb, setPb] = useState(() => { try { return JSON.parse(localStorage.getItem(BEST_KEY) || '{}'); } catch { return {}; } });
   const sim = useRef({});
   const car = CARS.find((c) => c.id === carId);
+  if (typeof window !== 'undefined') window.__carsim = sim; // read-only debug hook for automated driving tests
   const reset = () => { sim.current.s = newState(track, car); sim.current.g = newState(track, CARS[1]); sim.current.trail = []; };
 
   useEffect(() => { reset(); }, [carId]); // eslint-disable-line
