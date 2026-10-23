@@ -27,6 +27,15 @@ export default function Admin() {
               <td>{x.lastAttemptAt ? ago(x.lastAttemptAt) : 'never'}</td><td>{x.lastItemCount ?? '–'}</td><td>{x.consecutiveFailures}</td><td className="small">{x.lastError || '–'}</td></tr>))}
           </tbody></table></div>
         </Section>
+        {d.globalOpps && d.globalOpps.sources?.length > 0 && (
+          <Section title="Worldwide opportunity sources" hint={`Jobs, scholarships, fellowships and competitions from ${d.globalOpps.sources.length} global sources · ${d.globalOpps.items} listings · snapshot ${ago(d.globalOpps.builtAt)}`}>
+            <div className="tbl"><table><thead><tr><th>Source</th><th>Type</th><th>Status</th><th>Last success</th><th>Items</th><th>Failures in a row</th><th>Last error</th></tr></thead><tbody>
+              {d.globalOpps.sources.map((x) => (<tr key={x.key}><td><b>{x.key}</b><div className="mute small">{x.name}</div></td><td>{x.kind}</td>
+                <td><Badge kind={kindOf(x.lastStatus, x.consecutiveFailures)}>{x.enabled ? x.lastStatus : 'disabled'}</Badge></td>
+                <td>{x.lastSuccessAt ? ago(x.lastSuccessAt) : 'never'}</td><td>{x.lastItemCount ?? '–'}</td><td>{x.consecutiveFailures}</td><td className="small">{x.lastError || '–'}</td></tr>))}
+            </tbody></table></div>
+          </Section>
+        )}
         <Section title="Recent refresh jobs" hint="Newest first. A job only counts as successful if at least one source succeeded.">
           <div className="tbl"><table><thead><tr><th>Job</th><th>Started</th><th>Status</th><th>Sources ok</th><th>Fetched</th><th>New</th><th>Duplicates or unchanged</th><th>Errors</th></tr></thead><tbody>
             {d.jobs.map((j, i) => (<tr key={i}><td>{j.job}</td><td>{fmtDate(j.startedAt)}</td><td><Badge kind={j.status === 'ok' ? 'good' : j.status === 'partial' ? 'warn' : 'bad'}>{j.status}</Badge></td><td>{j.sourcesOk}/{j.sourcesTried}</td><td>{j.itemsFetched}</td><td>{j.itemsNew}</td><td>{j.duplicatesSkipped}</td><td className="small">{(j.errors || []).join('; ') || '–'}</td></tr>))}

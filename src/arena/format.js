@@ -5,7 +5,7 @@ export const CATS = [
 export const catLabel = (id) => CATS.find((c) => c.id === id)?.label || id;
 export const COUNTRIES = { GB: 'United Kingdom', IN: 'India', US: 'United States', EU: 'Europe', GLOBAL: 'Global' };
 export const countryLabel = (c) => COUNTRIES[c] || c || 'Unknown';
-export const TYPE_LABEL = { job: 'Job', internship: 'Internship', remote_job: 'Remote job', hackathon: 'Hackathon', coding_competition: 'Competition', scholarship: 'Scholarship', fellowship: 'Fellowship', government: 'Government', research: 'Research', trial: 'Trial', course: 'Course' };
+export const TYPE_LABEL = { job: 'Job', internship: 'Internship', remote_job: 'Remote job', hackathon: 'Hackathon', coding_competition: 'Competition', scholarship: 'Scholarship', fellowship: 'Fellowship', government: 'Government', research: 'Research', trial: 'Trial', course: 'Course', other: 'Opportunity' };
 export const STATUS_LABEL = { open: 'Open', closing_soon: 'Closing soon', closed: 'Closed', under_verification: 'Under verification', unknown: 'Deadline unknown' };
 export const CONTENT_LABEL = { news: 'Report', official: 'Official', analysis: 'Analysis', opinion: 'Opinion', unknown: 'Unclassified' };
 
