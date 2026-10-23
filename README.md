@@ -21,6 +21,8 @@ npm run build    # static site in dist/
 ```
 Deployed to GitHub Pages from the `gh-pages` branch (built `dist/`). An optional Actions workflow is in `docs/deploy-workflow.yml.example`.
 
+Data refresh: `.github/workflows/refresh-feeds.yml` runs hourly on GitHub Actions, calling the backend `refreshFeeds`, `refreshSports` and `buildSnapshots` functions so the read-only API stays fresh. The client also refuses to show a match as live if its start time is more than 6 hours past (stale provider data is demoted to a result).
+
 ## Design
 - Responsive from phone to 1080p TV: bottom tab bar on mobile, top tabs on desktop, scaled type on large screens.
 - TV-first input: spatial D-pad focus engine (`src/lib/dpad.js`) with visible focus rings; all controls are also touch and mouse friendly.

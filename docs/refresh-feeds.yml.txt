@@ -1,0 +1,31 @@
+# Copy this file to .github/workflows/refresh-feeds.yml on the main branch (easiest via
+# github.com/Himanshu90909/courtside-ai -> Add file -> Create new file) to enable
+# hourly data refresh. GitHub Actions is free for public repos. The API token used to
+# push this repo lacks the `workflow` scope, so the file cannot be committed by token.
+#
+# Keeps the CourtSide Arena data fresh by calling the backend refresh functions.
+# The Base44 app that hosts them (lyra-5b0b7385.base44.app) stopped running its own
+# scheduled refreshes on 2026-10-18, so this public workflow takes over that job:
+# it polls the keyless publisher feeds and rebuilds the read-only API snapshots.
+name: Refresh feeds
+on:
+  schedule:
+    - cron: '10 * * * *' # hourly, offset from the top of the hour
+  workflow_dispatch:
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Refresh news and opportunities
+        run: |
+          curl -sS -m 300 -X POST "$API/functions/refreshFeeds" -H 'Content-Type: application/json' -d '{}' | tee feeds.json
+      - name: Refresh sports
+        run: |
+          curl -sS -m 300 -X POST "$API/functions/refreshSports" -H 'Content-Type: application/json' -d '{}' | tee sports.json
+      - name: Rebuild API snapshots
+        run: |
+          sleep 65 # let entity write rate limits cool down before snapshotting
+          curl -sS -m 300 -X POST "$API/functions/buildSnapshots" -H 'Content-Type: application/json' -d '{}' | tee snapshots.json
+    env:
+      API: https://lyra-5b0b7385.base44.app

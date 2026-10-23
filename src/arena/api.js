@@ -36,8 +36,28 @@ export async function call(body, { retries = 2 } = {}) {
   throw lastErr || new Error('Network error');
 }
 
-export const getHome = () => call({ action: 'home' });
+// A match marked 'in' whose start time is long past is stale provider data (the feed dropped it
+// before reporting a final score). We never show such a match as live: anything older than 6 hours
+// is demoted to 'post' so the Live filter and the For You rail stay honest.
+const LIVE_MAX_AGE_MS = 6 * 60 * 60 * 1000;
+const normalizeEvent = (e) => {
+  if (!e || e.state !== 'in') return e;
+  const t = e.startTime ? new Date(e.startTime).getTime() : NaN;
+  return (isNaN(t) || Date.now() - t > LIVE_MAX_AGE_MS) ? { ...e, state: 'post' } : e;
+};
+const normalizeEvents = (arr) => (Array.isArray(arr) ? arr.map(normalizeEvent) : arr);
+
+export async function getHome() {
+  const r = await call({ action: 'home' });
+  if (r.data && Array.isArray(r.data.live)) r.data.live = r.data.live.filter((e) => normalizeEvent(e).state === 'in');
+  if (r.data && Array.isArray(r.data.upcoming)) r.data.upcoming = r.data.upcoming.map((e) => (e.state === 'in' ? normalizeEvent(e) : e));
+  return r;
+}
+export async function getSports(p) {
+  const r = await call({ action: 'sports', ...p });
+  if (r.data && Array.isArray(r.data.items)) r.data.items = normalizeEvents(r.data.items);
+  return r;
+}
 export const getNews = (p) => call({ action: 'news', ...p });
 export const getOpps = (p) => call({ action: 'opportunities', ...p });
-export const getSports = (p) => call({ action: 'sports', ...p });
 export const getStatus = () => call({ action: 'status' });
