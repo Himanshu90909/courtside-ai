@@ -13,6 +13,9 @@ function ShareBtn({ title, url }) {
   return (<button className="ico-btn" aria-label="Share" title={msg || 'Share'} onClick={async () => { const r = await shareLink(title, url); setMsg(r === 'copied' ? 'Link copied' : ''); setTimeout(() => setMsg(''), 1500); }}><Icon name="share" />{msg && <span className="toast-mini">{msg}</span>}</button>);
 }
 
+// Some feeds stringify null as the literal text "null"; treat that as no summary.
+const isText = (v) => typeof v === 'string' && v.trim() !== '' && v.trim().toLowerCase() !== 'null' && v.trim().toLowerCase() !== 'undefined';
+
 export function NewsCard({ a, compact }) {
   const [prefs] = usePrefs();
   const kind = a.contentType === 'opinion' ? 'warn' : a.contentType === 'analysis' ? 'info' : 'neutral';
@@ -22,7 +25,7 @@ export function NewsCard({ a, compact }) {
       <div className="news-body">
         <div className="meta-row"><Badge kind="blue">{catLabel(a.category)}</Badge><Badge kind={kind}>{CONTENT_LABEL[a.contentType] || 'Report'}</Badge>{a.coverage > 1 && <Badge kind="neutral">{a.coverage} reports</Badge>}</div>
         <h3><a href={a.articleUrl} target="_blank" rel="noopener noreferrer">{a.title}</a></h3>
-        {!compact && a.summary && <p className="sum">{a.summary}</p>}
+        {!compact && isText(a.summary) && <p className="sum">{a.summary}</p>}
         <div className="meta"><b>{a.sourceName}</b><span>Published {a.publishedAt ? fmtDate(a.publishedAt, prefs.timezone) : 'unknown'}</span><span>Collected {ago(a.fetchedAt)}</span><span>{countryLabel(a.country)}</span></div>
         {a.related?.length > 0 && !compact && (<details className="related"><summary>Also reported by {a.related.length} other source{a.related.length > 1 ? 's' : ''}</summary><ul>{a.related.slice(0, 5).map((r) => <li key={r.articleUrl}><a href={r.articleUrl} target="_blank" rel="noopener noreferrer">{r.title}</a> <span className="mute">· {r.sourceName}</span></li>)}</ul></details>)}
         <div className="card-actions"><a className="link-ext" href={a.articleUrl} target="_blank" rel="noopener noreferrer">Read on {hostOf(a.articleUrl)} <Icon name="ext" size={14} /></a><span className="grow" /><SaveBtn item={{ uid: a.uid, kind: 'article', title: a.title, url: a.articleUrl, source: a.sourceName }} /><ShareBtn title={a.title} url={a.articleUrl} /></div>
@@ -42,7 +45,7 @@ export function OppCard({ o, onReport }) {
       <div className="meta-row"><Badge kind="blue">{TYPE_LABEL[o.type] || o.type}</Badge><Badge kind={STATUS_KIND[o.status]}>{STATUS_LABEL[o.status] || o.status}</Badge>{o.remote === 'remote' && <Badge>Remote</Badge>}{o.paid === 'paid' && <Badge kind="good">Paid</Badge>}<Badge kind="neutral">{o.verificationStatus === 'verified' ? 'Verified' : 'Listed by source · not independently verified'}</Badge></div>
       <h3><a href={o.applyUrl} target="_blank" rel="noopener noreferrer">{o.title}</a></h3>
       <div className="org">{o.organization} · {o.location || 'Location unknown'} · {countryLabel(o.country)}</div>
-      {o.summary && <p className="sum">{o.summary}</p>}
+      {isText(o.summary) && <p className="sum">{o.summary}</p>}
       <dl className="facts">
         <div><dt>Deadline</dt><dd>{o.deadline ? <>{fmtDay(o.deadline, prefs.timezone)} {left && <span className={`left ${o.status === 'closing_soon' ? 'bad' : ''}`}>({left})</span>}</> : 'Unknown (not provided by source)'}{o.deadline && !o.deadlineVerified && ' · unverified'}</dd></div>
         <div><dt>Compensation</dt><dd>{o.compensation || (o.prize ? `Prize: ${o.prize}` : 'Unknown')}</dd></div>
